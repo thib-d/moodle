@@ -705,6 +705,15 @@ function enrol_get_my_courses($fields = null, $sort = null, $limit = 0, $coursei
     $wheres = ['c.id <> ' . SITEID];
     $params = [];
 
+    // Limit results to the current tenant when multi-tenancy is active and a tenant is selected.
+    if (mutenancy_is_active()) {
+        $currenttenantid = \tool_mutenancy\local\tenancy::get_current_tenantid();
+        if ($currenttenantid) {
+            $wheres[] = 'ctx.tenantid = :tenantid';
+            $params['tenantid'] = $currenttenantid;
+        }
+    }
+
     if (isset($USER->loginascontext) and $USER->loginascontext->contextlevel == CONTEXT_COURSE) {
         // list _only_ this course - anything else is asking for trouble...
         $wheres[] = "courseid = :loginas";
