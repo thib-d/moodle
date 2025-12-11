@@ -693,17 +693,21 @@ class core_course_external extends external_api {
             $courseinfo['pdfexportfont'] = $course->pdfexportfont;
 
             $handler = core_course\customfield\course_handler::create();
-            if ($customfields = $handler->export_instance_data($course->id)) {
-                $courseinfo['customfields'] = [];
-                foreach ($customfields as $data) {
-                    $courseinfo['customfields'][] = [
-                        'type' => $data->get_type(),
+                            if ($customfields = $handler->export_instance_data($course->id)) {
+                                $courseinfo['customfields'] = [];
+                                foreach ($customfields as $data) {
+                                    $courseinfo['customfields'][] = [
+                                        'type' => $data->get_type(),
                         'value' => $data->get_value(),
                         'valueraw' => $data->get_data_controller()->get_value(),
                         'name' => $data->get_name(),
                         'shortname' => $data->get_shortname()
                     ];
                 }
+            }
+
+            if (core_tag_tag::is_enabled('core', 'course')) {
+                $courseinfo['tags'] = \core_tag\external\util::get_item_tags('core', 'course', $course->id);
             }
 
             //some field should be returned only if the user has update permission
@@ -830,6 +834,11 @@ class core_course_external extends external_api {
                                      'valueraw' => new external_value(PARAM_RAW, 'The raw value of the custom field'),
                                      'value' => new external_value(PARAM_RAW, 'The value of the custom field')]
                                 ), 'Custom fields and associated values', VALUE_OPTIONAL),
+                            'tags' => new external_multiple_structure(
+                                \core_tag\external\tag_item_exporter::get_read_structure(),
+                                'Course tags',
+                                VALUE_OPTIONAL
+                            ),
                         ), 'course'
                 )
         );
