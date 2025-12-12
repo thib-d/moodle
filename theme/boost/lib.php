@@ -196,3 +196,13 @@ function theme_boost_get_pre_scss($theme) {
 
     return $scss;
 }
+
+/**
+ * Ensure our fullscreen helper JS is always loaded.
+ *
+ * @param moodle_page $page
+ */
+function theme_boost_page_init(moodle_page $page): void {
+    // Add a cache-busting param so changes to fullscreen.js are picked up.
+    $page->requires->js(new moodle_url('/theme/boost/javascript/fullscreen.js', ['v' => '3']), true);
+}
