@@ -38,6 +38,17 @@ if (isloggedin()) {
     $blockdraweropen = false;
 }
 
+// Force the course index closed on SCORM view/player pages.
+if ($courseindexopen) {
+    $pagetype = $PAGE->pagetype ?? '';
+    $pageurl = (string)$PAGE->url;
+    if (strpos($pagetype, 'mod-scorm-') === 0 ||
+        strpos($pageurl, '/mod/scorm/view.php') !== false ||
+        strpos($pageurl, '/mod/scorm/player.php') !== false) {
+        $courseindexopen = false;
+    }
+}
+
 if (defined('BEHAT_SITE_RUNNING') && get_user_preferences('behat_keep_drawer_closed') != 1) {
     $blockdraweropen = true;
 }
