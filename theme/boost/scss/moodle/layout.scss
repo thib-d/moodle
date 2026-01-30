@@ -190,6 +190,13 @@
             padding-right: 15px;
         }
     }
+    
+    // remove padding for the scorm viewer pages in course
+    #page-mod-scorm-player #page.drawers div[role="main"],
+    #page-mod-scorm-view #page.drawers div[role="main"] {
+        padding-left: 0;
+        padding-right: 0;
+    }
 }
 
 @include media-breakpoint-up(lg) {
