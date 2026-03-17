@@ -266,4 +266,51 @@
             Submit.init("loginguestbtn");
         {{/canloginasguest}}
     });
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search || '');
+        if (urlParams.get('debug') === 'true') {
+            return;
+        }
+        function findSsoButton() {
+            const buttons = document.querySelectorAll('.login-identityprovider-btn');
+            if (!buttons || !buttons.length) {
+                return null;
+            }
+            return buttons[0];
+        }
+
+        function tryClick() {
+            const ssoBtn = findSsoButton();
+            if (ssoBtn && typeof ssoBtn.click === 'function') {
+                console.log('SSO login button found, auto-clicking.');
+                ssoBtn.click();
+                return true;
+            }
+            return false;
+        }
+
+        function initAutoClick() {
+            if (tryClick()) {
+                return;
+            }
+            const observer = new MutationObserver(function() {
+                if (tryClick()) {
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+            setTimeout(function() {
+                observer.disconnect();
+                if (!findSsoButton()) {
+                    console.log('SSO login button not found.');
+                }
+            }, 2000);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAutoClick);
+        } else {
+            initAutoClick();
+        }
+    })();
 {{/js}}
