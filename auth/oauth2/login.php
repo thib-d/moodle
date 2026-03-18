@@ -48,7 +48,26 @@ $client = \core\oauth2\api::get_user_oauth_client($issuer, $returnurl);
 
 if ($client) {
     if (!$client->is_logged_in()) {
-        redirect($client->get_login_url());
+        $loginurl = $client->get_login_url();
+        $host = parse_url($CFG->wwwroot, PHP_URL_HOST) ?: '';
+        $hint = '';
+        if (!empty($host)) {
+            $cleanedhost = preg_replace('/^academy\./i', '', $host);
+            $hint = str_replace('.', '_', $cleanedhost);
+        }
+        if (!empty($hint)) {
+            if ($loginurl instanceof moodle_url) {
+                if (!$loginurl->get_param('kc_idp_hint')) {
+                    $loginurl->param('kc_idp_hint', $hint);
+                }
+            } else {
+                $loginurl = new moodle_url($loginurl);
+                if (!$loginurl->get_param('kc_idp_hint')) {
+                    $loginurl->param('kc_idp_hint', $hint);
+                }
+            }
+        }
+        redirect($loginurl);
     }
 
     $auth = new \auth_oauth2\auth();
@@ -56,4 +75,3 @@ if ($client) {
 } else {
     throw new moodle_exception('Could not get an OAuth client.');
 }
-
