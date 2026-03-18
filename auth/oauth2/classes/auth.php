@@ -202,11 +202,23 @@ class auth extends \auth_plugin_base {
             return;
         }
 
-        if (empty($SESSION->oauth2issuerid)) {
+        $issuerid = $SESSION->oauth2issuerid ?? null;
+        if (empty($issuerid)) {
+            $linkedlogins = \auth_oauth2\linked_login::get_records([
+                'userid' => $USER->id,
+                'confirmtoken' => '',
+            ]);
+            if (count($linkedlogins) === 1) {
+                $linkedlogin = reset($linkedlogins);
+                $issuerid = $linkedlogin->get('issuerid');
+            }
+        }
+
+        if (empty($issuerid)) {
             return;
         }
 
-        $issuer = \core\oauth2\api::get_issuer($SESSION->oauth2issuerid);
+        $issuer = \core\oauth2\api::get_issuer($issuerid);
         if (!$issuer || !$issuer->get('id')) {
             return;
         }
