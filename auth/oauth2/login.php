@@ -41,6 +41,8 @@ if (!$issuer->is_available_for_login()) {
     throw new \moodle_exception('issuernologin', 'auth_oauth2');
 }
 
+$SESSION->oauth2issuerid = $issuerid;
+
 $returnparams = ['wantsurl' => $wantsurl, 'sesskey' => sesskey(), 'id' => $issuerid];
 $returnurl = new moodle_url('/auth/oauth2/login.php', $returnparams);
 

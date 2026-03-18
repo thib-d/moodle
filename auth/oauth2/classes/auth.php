@@ -198,10 +198,6 @@ class auth extends \auth_plugin_base {
     public function logoutpage_hook() {
         global $SESSION, $USER, $redirect;
 
-        if (empty($USER) || $USER->auth !== $this->authtype) {
-            return;
-        }
-
         $issuerid = $SESSION->oauth2issuerid ?? null;
         if (empty($issuerid)) {
             $linkedlogins = \auth_oauth2\linked_login::get_records([
