@@ -78,6 +78,8 @@ $string['issuerloginparams'] = 'Additional parameters included in a login reques
 $string['issuerloginparams_help'] = 'Some systems require additional parameters for a login request in order to read the user\'s basic profile.';
 $string['issuerloginparamsoffline'] = 'Additional parameters included in a login request for offline access.';
 $string['issuerloginparamsoffline_help'] = 'Each OAuth system defines a different way to request offline access. E.g. Google requires the additional params: "access_type=offline&prompt=consent". These parameters should be in URL query parameter format.';
+$string['issuerlogouturl'] = 'Logout URL';
+$string['issuerlogouturl_help'] = 'Optional end-session URL for the identity provider. If set, Moodle will redirect to this URL after logout.';
 $string['issuerloginscopes_help'] = 'Some systems require additional scopes for a login request in order to read the user\'s basic profile. The standard scopes for an OpenID Connect compliant system are "openid profile email".';
 $string['issuerloginscopesoffline_help'] = 'Each OAuth system defines a different way to request offline access. E.g. Microsoft requires an additional scope "offline_access".';
 $string['issuerloginscopesoffline'] = 'Scopes included in a login request for offline access.';

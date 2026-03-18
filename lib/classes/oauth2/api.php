@@ -345,7 +345,47 @@ class api {
             $issuer->update();
         }
 
+        if (property_exists($data, 'logouturl')) {
+            self::update_end_session_endpoint($issuer, $data->logouturl, $create);
+        }
+
         return $issuer;
+    }
+
+    /**
+     * Create, update, or delete the end session (logout) endpoint for an issuer.
+     *
+     * @param issuer $issuer
+     * @param string|null $logouturl
+     * @param bool $create Whether this is a create operation.
+     * @return void
+     */
+    protected static function update_end_session_endpoint(issuer $issuer, ?string $logouturl, bool $create): void {
+        $logouturl = trim((string) $logouturl);
+        $endpoint = endpoint::get_record([
+            'issuerid' => $issuer->get('id'),
+            'name' => 'end_session_endpoint',
+        ]);
+
+        if ($logouturl === '') {
+            // Only delete on updates. On create we keep any discovered endpoint.
+            if (!$create && $endpoint) {
+                $endpoint->delete();
+            }
+            return;
+        }
+
+        if ($endpoint) {
+            $endpoint->set('url', $logouturl);
+            $endpoint->update();
+        } else {
+            $endpoint = new endpoint(0, [
+                'issuerid' => $issuer->get('id'),
+                'name' => 'end_session_endpoint',
+                'url' => $logouturl,
+            ]);
+            $endpoint->create();
+        }
     }
 
     /**

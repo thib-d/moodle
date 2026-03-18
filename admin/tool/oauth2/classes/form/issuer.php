@@ -167,6 +167,12 @@ class issuer extends persistent {
         $mform->addRule('loginparamsoffline', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('loginparamsoffline', 'issuerloginparamsoffline', 'tool_oauth2');
 
+        // Logout URL (OIDC end session endpoint).
+        $mform->addElement('text', 'logouturl', get_string('issuerlogouturl', 'tool_oauth2'));
+        $mform->addRule('logouturl', get_string('maximumchars', '', 1024), 'maxlength', 1024, 'client');
+        $mform->setType('logouturl', PARAM_URL);
+        $mform->addHelpButton('logouturl', 'issuerlogouturl', 'tool_oauth2');
+
         // Allowed Domains.
         $mform->addElement('text', 'alloweddomains', get_string('issueralloweddomains', 'tool_oauth2'));
         $mform->addRule('alloweddomains', get_string('maximumchars', '', 1024), 'maxlength', 1024, 'client');
@@ -231,6 +237,14 @@ class issuer extends persistent {
             // Set servicetype if it's defined.
             $mform->getElement('servicetype')->setValue($this->type);
         }
+
+        if ($mform->elementExists('logouturl')) {
+            $issuer = $this->get_persistent();
+            $logouturl = $issuer->get_endpoint_url('end_session');
+            if (!empty($logouturl)) {
+                $mform->getElement('logouturl')->setValue($logouturl);
+            }
+        }
     }
 
     /**
@@ -253,6 +267,10 @@ class issuer extends persistent {
      * @return array of additional errors, or overridden errors.
      */
     protected function extra_validation($data, $files, array &$errors) {
+        if (!empty($data->logouturl) && strpos($data->logouturl, 'https://') !== 0) {
+            $errors['logouturl'] = get_string('sslonlyaccess', 'error');
+        }
+
         if ($data->showonloginpage != \core\oauth2\issuer::SERVICEONLY) {
             if (!strlen(trim($data->loginscopes))) {
                 $errors['loginscopes'] = get_string('required');

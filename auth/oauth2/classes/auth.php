@@ -192,6 +192,32 @@ class auth extends \auth_plugin_base {
     }
 
     /**
+     * Hook for overriding behaviour of logout page.
+     * Redirect to IdP end-session endpoint if configured for the issuer used to log in.
+     */
+    public function logoutpage_hook() {
+        global $SESSION, $USER, $redirect;
+
+        if (empty($USER) || $USER->auth !== $this->authtype) {
+            return;
+        }
+
+        if (empty($SESSION->oauth2issuerid)) {
+            return;
+        }
+
+        $issuer = \core\oauth2\api::get_issuer($SESSION->oauth2issuerid);
+        if (!$issuer || !$issuer->get('id')) {
+            return;
+        }
+
+        $logouturl = $issuer->get_endpoint_url('end_session');
+        if (!empty($logouturl)) {
+            $redirect = $logouturl;
+        }
+    }
+
+    /**
      * Statically cache the user info from the oauth handshake
      * @param stdClass $userinfo
      */
@@ -460,6 +486,7 @@ class auth extends \auth_plugin_base {
         }
 
         $issuer = $client->get_issuer();
+        $SESSION->oauth2issuerid = $issuer->get('id');
         // First we try and find a defined mapping.
         $linkedlogin = api::match_username_to_user($userinfo['username'], $issuer);
 
