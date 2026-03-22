@@ -56,7 +56,7 @@ if ($client) {
         if (!empty($host)) {
             $cleanedhost = preg_replace('/^academy\./i', '', $host);
             $hint_dns = str_replace('.', '_', $cleanedhost);
-            $hint = "https_auth_" . $hint_dns . "_realms_" . $hint_dns;
+            $hint = $hint_dns ;
         }
         if (!empty($hint)) {
             if ($loginurl instanceof moodle_url) {
