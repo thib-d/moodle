@@ -33,8 +33,10 @@ require_once($CFG->libdir .'/filelib.php');
 
 redirect_if_major_upgrade_required();
 
-// Always send homepage traffic to the login page.
-redirect(new moodle_url('/login/index.php'));
+// Always send homepage traffic to the dashboard (/my).
+// Unauthenticated users hitting /my will then be redirected to the login page
+// and brought back to /my after a successful login.
+redirect(new moodle_url('/my/'));
 
 // Redirect logged-in users to homepage if required.
 $redirect = optional_param('redirect', 1, PARAM_BOOL);
