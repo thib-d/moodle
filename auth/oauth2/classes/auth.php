@@ -214,8 +214,8 @@ class auth extends \auth_plugin_base {
             return;
         }
 
-        $issuer = \core\oauth2\api::get_issuer($issuerid);
-        if (!$issuer || !$issuer->get('id')) {
+        $issuer = \core\oauth2\issuer::get_record(['id' => $issuerid]);
+        if (!$issuer) {
             return;
         }
 

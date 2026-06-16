@@ -43,8 +43,11 @@
             <div id="region-main-box" class="col-12">
                 <div id="region-main" class="col-12 h-100">
                 <div class="login-wrapper">
-                    <div class="login-container">
+                    <div class="login-container" id="login-container" style="display: none;">
                     {{{ output.main_content }}}
+                    </div>
+                    <div id="login-waiting-message" class="text-center p-5">
+                        <p class="h5">{{#str}}loginpleasewait, theme_boost{{/str}}</p>
                     </div>
                 </div>
                 </div>
@@ -61,4 +64,17 @@ M.util.js_pending('theme_boost/loader');
 require(['theme_boost/loader'], function() {
   M.util.js_complete('theme_boost/loader');
 });
+(function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('debug') === 'true') {
+        var loginContainer = document.getElementById('login-container');
+        var waitingMessage = document.getElementById('login-waiting-message');
+        if (loginContainer) {
+            loginContainer.style.display = '';
+        }
+        if (waitingMessage) {
+            waitingMessage.style.display = 'none';
+        }
+    }
+})();
 {{/js}}

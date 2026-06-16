@@ -36,6 +36,7 @@ $string['configtitle'] = 'Boost';
 $string['generalsettings'] = 'General settings';
 $string['loginbackgroundimage'] = 'Login page background image';
 $string['loginbackgroundimage_desc'] = 'The image to display as a background for the login page.';
+$string['loginpleasewait'] = 'Please wait a few seconds...';
 $string['nobootswatch'] = 'None';
 $string['pluginname'] = 'Boost';
 $string['presetfiles'] = 'Additional theme preset files';
