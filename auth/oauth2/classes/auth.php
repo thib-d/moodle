@@ -220,9 +220,24 @@ class auth extends \auth_plugin_base {
         }
 
         $logouturl = $issuer->get_endpoint_url('end_session');
-        if (!empty($logouturl)) {
-            $redirect = $logouturl;
+        if (empty($logouturl)) {
+            return;
         }
+
+        // Bring the user back to the page they were on before logging out
+        // instead of stranding them on Keycloak's own post-logout page.
+        // Only trust the referer if it points back to this Moodle instance.
+        global $CFG;
+        $returnto = $CFG->wwwroot . '/';
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        if ($referer !== '' && strpos($referer, $CFG->wwwroot) === 0) {
+            $returnto = $referer;
+        }
+
+        $redirect = (new moodle_url($logouturl, [
+            'post_logout_redirect_uri' => $returnto,
+            'client_id' => $issuer->get('clientid'),
+        ]))->out(false);
     }
 
     /**
