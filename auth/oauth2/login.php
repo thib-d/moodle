@@ -73,6 +73,12 @@ if ($client) {
         redirect($loginurl);
     }
 
+    // Keep the OIDC id_token so we can pass it as id_token_hint at logout time,
+    // letting Keycloak skip its own logout confirmation screen.
+    if (method_exists($client, 'get_id_token') && $client->get_id_token()) {
+        $SESSION->oauth2idtoken = $client->get_id_token();
+    }
+
     $auth = new \auth_oauth2\auth();
     $auth->complete_login($client, $wantsurl);
 } else {

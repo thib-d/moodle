@@ -234,10 +234,17 @@ class auth extends \auth_plugin_base {
             $returnto = $referer;
         }
 
-        $redirect = (new moodle_url($logouturl, [
+        $endsessionparams = [
             'post_logout_redirect_uri' => $returnto,
             'client_id' => $issuer->get('clientid'),
-        ]))->out(false);
+        ];
+        // Passing id_token_hint lets Keycloak skip its "Do you want to log out?"
+        // confirmation screen and log out immediately.
+        if (!empty($SESSION->oauth2idtoken)) {
+            $endsessionparams['id_token_hint'] = $SESSION->oauth2idtoken;
+        }
+
+        $redirect = (new moodle_url($logouturl, $endsessionparams))->out(false);
     }
 
     /**

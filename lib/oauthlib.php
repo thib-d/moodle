@@ -416,6 +416,8 @@ abstract class oauth2_client extends curl {
     protected $accesstoken = null;
     /** @var string $refreshtoken refresh token string */
     protected $refreshtoken = '';
+    /** @var string $idtoken raw OIDC id_token from the last token upgrade, used as id_token_hint on logout */
+    protected $idtoken = '';
     /** @var string $mocknextresponse string */
     private $mocknextresponse = '';
     /** @var array $upgradedcodes list of upgraded codes in this request */
@@ -616,6 +618,10 @@ abstract class oauth2_client extends curl {
             $this->refreshtoken = $r->refresh_token;
         }
 
+        if (!empty($r->id_token)) {
+            $this->idtoken = $r->id_token;
+        }
+
         // Store the token an expiry time.
         $accesstoken = new stdClass;
         $accesstoken->token = $r->access_token;
@@ -636,6 +642,15 @@ abstract class oauth2_client extends curl {
      */
     public function log_out() {
         $this->store_token(null);
+    }
+
+    /**
+     * Returns the raw OIDC id_token captured during the last token upgrade, if any.
+     *
+     * @return string
+     */
+    public function get_id_token() {
+        return $this->idtoken;
     }
 
     /**
